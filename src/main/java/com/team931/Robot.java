@@ -56,22 +56,13 @@ public class Robot extends TimedRobot {
     }
 
     private void driveWithJoystick(boolean fieldRelative) {
-        // Get the x speed. We are inverting this because Xbox controllers return
-        // negative values when we push forward.
-        final var xSpeed = -xSpeedLimiter.calculate(MathUtil.applyDeadband(m_controller.getX(), 0.02))
+        final double xSpeed = -xSpeedLimiter.calculate(MathUtil.applyDeadband(m_controller.getX(), 0.02))
                 * Constants.DriveTrain.maxSpeed;
 
-        // Get the y speed or sideways/strafe speed. We are inverting this because
-        // we want a positive value when we pull to the left. Xbox controllers
-        // return positive values when you pull to the right by default.
-        final var ySpeed = -ySpeedLimiter.calculate(MathUtil.applyDeadband(m_controller.getY(), 0.02))
+        final double ySpeed = -ySpeedLimiter.calculate(MathUtil.applyDeadband(m_controller.getY(), 0.02))
                 * Constants.DriveTrain.maxSpeed;
 
-        // Get the rate of angular rotation. We are inverting this because we want a
-        // positive value when we pull to the left (remember, CCW is positive in
-        // mathematics). Xbox controllers return positive values when you pull to
-        // the right by default.
-        final var rot = -rotLimiter.calculate(MathUtil.applyDeadband(m_controller.getZ(), 0.02))
+        final double rot = -rotLimiter.calculate(MathUtil.applyDeadband(m_controller.getZ(), 0.02))
                 * Constants.DriveTrain.maxAngularSpeed;
 
         joystick.drive(xSpeed, ySpeed, rot, fieldRelative);
