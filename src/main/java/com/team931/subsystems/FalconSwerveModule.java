@@ -16,20 +16,21 @@ public class FalconSwerveModule {
     private final TalonFX driveMotor;
     private final TalonFX turnMotor;
     private final DutyCycleEncoder absEncoder;
-
-    private Rotation2d offset;
+    private Rotation2d encoderZero;
 
     /**
      * Initializes the swerve module with default settings and binds motors.
      *
-     * @param driveId   CAN ID of the drive motor.
-     * @param turnId    CAN ID of the turn motor.
-     * @param encoderId DIO ID of the absolute encoder.
+     * @param driveId     CAN ID of the drive motor.
+     * @param turnId      CAN ID of the turn motor.
+     * @param encoderId   DIO ID of the absolute encoder.
+     * @param encoderZero The encoder value that the
      */
-    public FalconSwerveModule(int driveId, int turnId, int encoderId) {
-        driveMotor = new TalonFX(driveId);
-        turnMotor = new TalonFX(turnId);
-        absEncoder = new DutyCycleEncoder(encoderId);
+    public FalconSwerveModule(int driveId, int turnId, int encoderId, float encoderZero) {
+        this.driveMotor = new TalonFX(driveId);
+        this.turnMotor = new TalonFX(turnId);
+        this.absEncoder = new DutyCycleEncoder(encoderId);
+        this.encoderZero = new Rotation2d(encoderZero);
 
         driveMotor.enableVoltageCompensation(true);
         driveMotor.setNeutralMode(NeutralMode.Coast);
@@ -44,7 +45,24 @@ public class FalconSwerveModule {
         turnMotor.setSensorPhase(false);
     }
 
-    // Offsets the steering motor so that current position is now 0
+    /**
+     * Set drive motor neutral mode to coast.
+     */
+    public void setNeutralModeCoast() {
+        driveMotor.setNeutralMode(NeutralMode.Coast);
+    }
+
+    /**
+     * Set drive motor neutral mode to brake.
+     */
+    public void setNeutralModeBrake() {
+        driveMotor.setNeutralMode(NeutralMode.Brake);
+    }
+
+    /**
+     * Offsets the steering encoder so that the current position becomes the new
+     * front.
+     */
     public void rezeroSteeringMotor() {
         offset = Rotation2d.fromRadians(turnMotor.getSelectedSensorPosition())
                 .rotateBy(getAdjustedRotation().unaryMinus());
@@ -57,16 +75,15 @@ public class FalconSwerveModule {
      *         module.
      */
     public SwerveModuleState getState() {
-        return new SwerveModuleState(
-                getDriveVelocity(), getAdjustedRotation());
+        return new SwerveModuleState(getDriveVelocity(), getDriveDistance(), getSteerAngle());
     }
 
     /**
-     * Get the current rotation of the swerve module
+     * Get the current rotation of the swerve module.
      * 
-     * @return An object that contains true rotation of the swerve module.
+     * @return An object that contains the encoder value of the absolute encoder.
      */
-    public Rotation2d getRotation() {
+    public Rotation2d getAbsEncoderAngle() {
         return Rotation2d.fromDegrees(absEncoder.getAbsolutePosition());
     }
 
@@ -76,8 +93,17 @@ public class FalconSwerveModule {
      * @return A rotation object that contains the adjusted rotation of the swerve
      *         module.
      */
-    public Rotation2d getAdjustedRotation() {
-        return getRotation().rotateBy(offset.unaryMinus());
+    public Rotation2d getAdjustedAbsEncoderAngle() {
+        return getAbsEncoderAngle().rotateBy(encoderZero.unaryMinus());
+    }
+
+    /**
+     * Get the total distance that the drive motor has driven
+     * 
+     * @return A double of how many centimeters the bot has driven
+     */
+    public double getDriveDistance() {
+        return driveMotor.getSelectedSensorPosition() * Constants.DriveTrain.driveEncoderAdjustCoefficient;
     }
 
     /**
@@ -86,7 +112,7 @@ public class FalconSwerveModule {
      * @return A double of the current velocity of the drive motor encoder
      */
     public double getDriveVelocity() {
-        return driveMotor.getSelectedSensorVelocity();
+        return driveMotor.getSelectedSensorVelocity() * Constants.DriveTrain.driveVelocityCoefficient;
     }
 
     /**

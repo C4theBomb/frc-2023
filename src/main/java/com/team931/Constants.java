@@ -10,27 +10,33 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 public class Constants {
     // Drive Train Constants
     public static class DriveTrain {
-        public static final double driveTrainWheelDiameter = 0.10033 * 81.0 / 84.213; // TODO measure
-        public static final double driveTrainTrackWidth = 0.61595; // TODO measure
-        public static final double driveTrainTrackLength = 0.61595; // TODO measure
+        public static final double wheelDiameter = 0.10033 * 81.0 / 84.213; // TODO measure
+        public static final double trackWidth = 0.61595; // TODO measure
+        public static final double trackLength = 0.61595; // TODO measure
         public static final double gearRatio = 6.55;
         public static final double encoderResolution = 0; // TODO measure
-        public static final double maxSpeed = 0; // TODO measure
+        public static final double maxRotations = 0; // TODO measure
         public static final double maxAngularSpeed = Math.PI; // TODO measure
+
+        public static final double driveEncoderAdjustCoefficient = Math.PI * Constants.DriveTrain.wheelDiameter
+                / 2048.0;
+        public static final double driveVelocityCoefficient = driveEncoderAdjustCoefficient * maxRotations;
+
+        public static final double turnEncoderAdjustCoefficient = 2.0 * Math.PI / 2048.0;
 
         public static final SwerveDriveKinematics driveTrainKinematics = new SwerveDriveKinematics(
                 // Front left
-                new Translation2d(Constants.DriveTrain.driveTrainTrackWidth / 2.0,
-                        Constants.DriveTrain.driveTrainTrackLength / 2.0),
+                new Translation2d(Constants.DriveTrain.trackWidth / 2.0,
+                        Constants.DriveTrain.trackLength / 2.0),
                 // Front right
-                new Translation2d(Constants.DriveTrain.driveTrainTrackWidth / 2.0,
-                        -Constants.DriveTrain.driveTrainTrackLength / 2.0),
+                new Translation2d(Constants.DriveTrain.trackWidth / 2.0,
+                        -Constants.DriveTrain.trackLength / 2.0),
                 // Back left
-                new Translation2d(-Constants.DriveTrain.driveTrainTrackWidth / 2.0,
-                        Constants.DriveTrain.driveTrainTrackLength / 2.0),
+                new Translation2d(-Constants.DriveTrain.trackWidth / 2.0,
+                        Constants.DriveTrain.trackLength / 2.0),
                 // Back right
-                new Translation2d(-Constants.DriveTrain.driveTrainTrackWidth / 2.0,
-                        -Constants.DriveTrain.driveTrainTrackLength / 2.0));
+                new Translation2d(-Constants.DriveTrain.trackWidth / 2.0,
+                        -Constants.DriveTrain.trackLength / 2.0));
 
         // Gains are for example purposes only - must be determined for your own robot!
         public static final PIDController drivePIDController = new PIDController(1, 0, 0);
@@ -41,7 +47,7 @@ public class Constants {
                 0,
                 0,
                 new TrapezoidProfile.Constraints(
-                        maxSpeed, maxAngularSpeed));
+                        driveVelocityCoefficient, maxAngularSpeed));
 
         // Gains are for example purposes only - must be determined for your own robot!
         public static final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(1, 3);
