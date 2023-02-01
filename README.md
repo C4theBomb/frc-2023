@@ -72,9 +72,9 @@ This is where most of the documentation about the tools that are used by this re
 Before proceding with the steps below, you should have all of the [prerequisites](#prerequisites) listed above already installed on your machine. These steps will also assume that you have a basic understanding of how to navigate a file directory in a terminal.
 
 1. Follow these [installation instructuctions](https://docs.wpilib.org/en/stable/docs/zero-to-robot/step-2/wpilib-setup.html) for setting up WPILib. None of the code will run without this.
-1. Clone the repository into the desired directory using `git clone https://github.com/C4theBomb/frc-2023.git`
-2. You can now open the folder named `ftc-2023` in VSCode.
-3. You should now be able to modify the code. The team's code can be found in [src/main/java/frc/robot](src/main/java/frc/robot).
+1. Clone the repository into the desired directory using `git clone https://github.com/Team-931/frc-2023.git`
+2. You can now open the folder named `frc-2023` in VSCode.
+3. You should now be able to modify the code. The team's code can be found in [src/main/java/com/team931](src/main/java/com/team931).
 4. If you feel the need to test the code, `Ctrl+Shift+P` and run the command `WPILib: Build Robot Code`
 
 ## Naming Conventions
