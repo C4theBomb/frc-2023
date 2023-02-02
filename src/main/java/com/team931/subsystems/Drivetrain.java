@@ -15,13 +15,13 @@ import edu.wpi.first.wpilibj.AnalogGyro;
 /** Represents a swerve drive style drivetrain. */
 public class Drivetrain {
     private final FalconSwerveModule frontLeft = new FalconSwerveModule(Constants.flDriveId, Constants.flTurnId,
-            Constants.flAbsEncoder);
+            Constants.flAbsEncoder, 0);
     private final FalconSwerveModule frontRight = new FalconSwerveModule(Constants.frDriveId, Constants.frTurnId,
-            Constants.frAbsEncoder);
+            Constants.frAbsEncoder, 0);
     private final FalconSwerveModule backLeft = new FalconSwerveModule(Constants.blDriveId, Constants.blTurnId,
-            Constants.blAbsEncoder);
+            Constants.blAbsEncoder, 0);
     private final FalconSwerveModule backRight = new FalconSwerveModule(Constants.brDriveId, Constants.brTurnId,
-            Constants.brAbsEncoder);
+            Constants.brAbsEncoder, 0);
 
     private final AnalogGyro gyro = new AnalogGyro(0);
 
@@ -53,7 +53,7 @@ public class Drivetrain {
                 fieldRelative
                         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d())
                         : new ChassisSpeeds(xSpeed, ySpeed, rot));
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.DriveTrain.maxSpeed);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.DriveTrain.maxDriveVelocity);
         frontLeft.setDesiredState(swerveModuleStates[0]);
         frontRight.setDesiredState(swerveModuleStates[1]);
         backLeft.setDesiredState(swerveModuleStates[2]);

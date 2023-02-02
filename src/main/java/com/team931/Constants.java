@@ -1,28 +1,32 @@
 package com.team931;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public class Constants {
     // Drive Train Constants
     public static class DriveTrain {
-        public static final double wheelDiameter = 0.10033 * 81.0 / 84.213; // TODO measure
-        public static final double trackWidth = 0.61595; // TODO measure
-        public static final double trackLength = 0.61595; // TODO measure
+        public static final double wheelDiameter = 0.1016; // TODO measure
+        public static final double trackWidth = 0.61595;
+        public static final double trackLength = 0.61595;
         public static final double gearRatio = 6.55;
-        public static final double encoderResolution = 0; // TODO measure
-        public static final double maxRotations = 0; // TODO measure
-        public static final double maxAngularSpeed = Math.PI; // TODO measure
+        public static final double motorRpm = 6380.0 / gearRatio;
+        public static final double encoderResolution = 2048.0;
 
-        public static final double driveEncoderAdjustCoefficient = Math.PI * Constants.DriveTrain.wheelDiameter
-                / 2048.0;
-        public static final double driveVelocityCoefficient = driveEncoderAdjustCoefficient * maxRotations;
+        public static final double distancePerRotation = Math.PI * wheelDiameter;
 
-        public static final double turnEncoderAdjustCoefficient = 2.0 * Math.PI / 2048.0;
+        public static final double maxAngularVelocity = 1.4 * Math.PI; // TODO measure
+        public static final double maxDriveVelocity = ((motorRpm / 60) * distancePerRotation) * 0.80 / 10;
+
+        // Used to translate the encoder values to a true distance value
+        public static final double driveEncoderTranslationCoefficient = distancePerRotation
+                / encoderResolution;
+
+        // Used to translate the encoder values to a true radian value
+        public static final double turnEncoderTranslationCoefficient = 2.0 * Math.PI / encoderResolution;
+
+        // Used to translate from the encoder velocity to m/s
+        public static final double driveVelocityTranslationCoefficient = driveEncoderTranslationCoefficient * 10.0;
 
         public static final SwerveDriveKinematics driveTrainKinematics = new SwerveDriveKinematics(
                 // Front left
@@ -37,21 +41,6 @@ public class Constants {
                 // Back right
                 new Translation2d(-Constants.DriveTrain.trackWidth / 2.0,
                         -Constants.DriveTrain.trackLength / 2.0));
-
-        // Gains are for example purposes only - must be determined for your own robot!
-        public static final PIDController drivePIDController = new PIDController(1, 0, 0);
-
-        // Gains are for example purposes only - must be determined for your own robot!
-        public static final ProfiledPIDController turningPIDController = new ProfiledPIDController(
-                1,
-                0,
-                0,
-                new TrapezoidProfile.Constraints(
-                        driveVelocityCoefficient, maxAngularSpeed));
-
-        // Gains are for example purposes only - must be determined for your own robot!
-        public static final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(1, 3);
-        public static final SimpleMotorFeedforward turnFeedforward = new SimpleMotorFeedforward(1, 0.5);
     }
 
     // CAN Swerve Module Can IDs
