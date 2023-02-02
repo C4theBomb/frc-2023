@@ -141,6 +141,28 @@ public class FalconSwerveModule {
     }
 
     /**
+     * Set the velocity of the module.
+     *
+     * @param velocity The velocity that the module should go in m/s.
+     */
+    public void setVelocity(double velocity) {
+        driveMotor.set(TalonFXControlMode.Velocity,
+                velocity / Constants.DriveTrain.driveVelocityTranslationCoefficient);
+    }
+
+    /**
+     * Set the rotation angle of the swerve module.
+     *
+     * @param angle A Rotation2d object of the angle that the module should be
+     *              rotated at.
+     */
+    public void setModuleAngle(Rotation2d angle) {
+        turnMotor.set(TalonFXControlMode.Position,
+                (angle.getRadians() + offset.getRadians())
+                        / Constants.DriveTrain.turnEncoderTranslationCoefficient);
+    }
+
+    /**
      * Get the current position of the swerve module,
      * 
      * @param desiredState The goal state of the swerve module.
@@ -149,11 +171,8 @@ public class FalconSwerveModule {
         // Optimize the reference state to avoid spinning further than 90 degrees
         SwerveModuleState state = SwerveModuleState.optimize(desiredState, getModuleAngle());
 
-        driveMotor.set(TalonFXControlMode.Velocity,
-                state.speedMetersPerSecond / Constants.DriveTrain.driveVelocityTranslationCoefficient);
-        turnMotor.set(TalonFXControlMode.Position,
-                (state.angle.getRadians() + offset.getRadians())
-                        / Constants.DriveTrain.turnEncoderTranslationCoefficient);
+        setVelocity(state.speedMetersPerSecond);
+        setModuleAngle(state.angle);
     }
 
     /**

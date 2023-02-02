@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class Robot extends TimedRobot {
     private final Joystick m_controller = new Joystick(0);
-    private final Drivetrain joystick = new Drivetrain();
+    private final Drivetrain driveTrain = new Drivetrain();
 
     // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
     private final SlewRateLimiter xSpeedLimiter = new SlewRateLimiter(3);
@@ -30,6 +30,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
+        driveTrain.zeroWheels();
     }
 
     @Override
@@ -44,7 +45,7 @@ public class Robot extends TimedRobot {
     @Override
     public void testPeriodic() {
         driveWithJoystick(false);
-        joystick.updateOdometry();
+        driveTrain.updateOdometry();
     }
 
     @Override
@@ -53,6 +54,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledPeriodic() {
+
     }
 
     private void driveWithJoystick(boolean fieldRelative) {
@@ -65,6 +67,6 @@ public class Robot extends TimedRobot {
         final double rot = -rotLimiter.calculate(MathUtil.applyDeadband(m_controller.getZ(), 0.02))
                 * Constants.DriveTrain.maxAngularVelocity;
 
-        joystick.drive(xSpeed, ySpeed, rot, fieldRelative);
+        driveTrain.drive(xSpeed, ySpeed, rot, fieldRelative);
     }
 }

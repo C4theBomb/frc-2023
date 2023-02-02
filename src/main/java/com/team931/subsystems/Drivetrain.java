@@ -6,6 +6,7 @@ package com.team931.subsystems;
 
 import com.team931.Constants;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -58,6 +59,13 @@ public class Drivetrain {
         frontRight.setDesiredState(swerveModuleStates[1]);
         backLeft.setDesiredState(swerveModuleStates[2]);
         backRight.setDesiredState(swerveModuleStates[3]);
+    }
+
+    public void zeroWheels() {
+        frontLeft.setModuleAngle(Rotation2d.fromDegrees(0));
+        frontRight.setModuleAngle(Rotation2d.fromDegrees(0));
+        backLeft.setModuleAngle(Rotation2d.fromDegrees(0));
+        backRight.setModuleAngle(Rotation2d.fromDegrees(0));
     }
 
     /** Updates the field relative position of the robot. */
