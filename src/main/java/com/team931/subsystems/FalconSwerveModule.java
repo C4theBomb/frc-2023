@@ -18,6 +18,8 @@ public class FalconSwerveModule {
     private final DutyCycleEncoder absEncoder;
     private Rotation2d encoderZero;
 
+    private Rotation2d offset;
+
     /**
      * Initializes the swerve module with default settings and binds motors.
      *
@@ -63,10 +65,10 @@ public class FalconSwerveModule {
      * Offsets the steering encoder so that the current position becomes the new
      * front.
      */
-    public void rezeroSteeringMotor() {
-        offset = Rotation2d.fromRadians(turnMotor.getSelectedSensorPosition())
-                .rotateBy(getAdjustedRotation().unaryMinus());
-    }
+    // public void rezeroSteeringMotor() {
+    // offset = Rotation2d.fromRadians(turnMotor.getSelectedSensorPosition())
+    // .rotateBy(getAdjustedRotation().unaryMinus());
+    // }
 
     /**
      * Get the current state of the swerve module.
@@ -75,7 +77,7 @@ public class FalconSwerveModule {
      *         module.
      */
     public SwerveModuleState getState() {
-        return new SwerveModuleState(getDriveVelocity(), getDriveDistance(), getSteerAngle());
+        return new SwerveModuleState(getDriveVelocity(), getModuleAngle());
     }
 
     /**
@@ -103,7 +105,7 @@ public class FalconSwerveModule {
      * @return A double of how many centimeters the bot has driven
      */
     public double getDriveDistance() {
-        return driveMotor.getSelectedSensorPosition() * Constants.DriveTrain.driveEncoderAdjustCoefficient;
+        return driveMotor.getSelectedSensorPosition() * Constants.DriveTrain.driveEncoderTranslationCoefficient;
     }
 
     /**
@@ -112,7 +114,19 @@ public class FalconSwerveModule {
      * @return A double of the current velocity of the drive motor encoder
      */
     public double getDriveVelocity() {
-        return driveMotor.getSelectedSensorVelocity() * Constants.DriveTrain.driveVelocityCoefficient;
+        return driveMotor.getSelectedSensorVelocity() * Constants.DriveTrain.driveVelocityTranslationCoefficient;
+    }
+
+    /**
+     * Get the current angle of the swerve module
+     * 
+     * @return A rotation object of the current angle of the drive motor encoder in
+     *         radians
+     */
+    public Rotation2d getModuleAngle() {
+        return Rotation2d.fromRadians(
+                turnMotor.getSelectedSensorPosition() * Constants.DriveTrain.turnEncoderTranslationCoefficient
+                        - offset.getRadians());
     }
 
     /**
@@ -123,7 +137,7 @@ public class FalconSwerveModule {
      */
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(
-                driveMotor.getSelectedSensorPosition(), getAdjustedRotation());
+                driveMotor.getSelectedSensorPosition(), getModuleAngle());
     }
 
     /**
@@ -133,24 +147,13 @@ public class FalconSwerveModule {
      */
     public void setDesiredState(SwerveModuleState desiredState) {
         // Optimize the reference state to avoid spinning further than 90 degrees
-        SwerveModuleState state = SwerveModuleState.optimize(desiredState, getAdjustedRotation());
+        SwerveModuleState state = SwerveModuleState.optimize(desiredState, getModuleAngle());
 
-        // Calculate the drive output from the drive PID controller.
-        final double driveOutput = Constants.DriveTrain.drivePIDController.calculate(getDriveVelocity(),
-                state.speedMetersPerSecond);
-
-        final double driveFeedforward = Constants.DriveTrain.driveFeedforward.calculate(state.speedMetersPerSecond);
-
-        // Calculate the turning motor output from the turning PID controller.
-        final double turnOutput = Constants.DriveTrain.turningPIDController.calculate(
-                getAdjustedRotation().getRadians(),
-                state.angle.getRadians());
-
-        final double turnFeedforward = Constants.DriveTrain.turnFeedforward
-                .calculate(Constants.DriveTrain.turningPIDController.getSetpoint().velocity);
-
-        driveMotor.set(TalonFXControlMode.Current, driveOutput + driveFeedforward);
-        turnMotor.set(TalonFXControlMode.Current, turnOutput + turnFeedforward);
+        driveMotor.set(TalonFXControlMode.Velocity,
+                state.speedMetersPerSecond / Constants.DriveTrain.driveVelocityTranslationCoefficient);
+        turnMotor.set(TalonFXControlMode.Position,
+                (state.angle.getRadians() + offset.getRadians())
+                        / Constants.DriveTrain.turnEncoderTranslationCoefficient);
     }
 
     /**
