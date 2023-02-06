@@ -15,13 +15,13 @@ import edu.wpi.first.wpilibj.AnalogGyro;
 
 /** Represents a swerve drive style drivetrain. */
 public class Drivetrain {
-    private final FalconSwerveModule frontLeft = new FalconSwerveModule(Constants.flDriveId, Constants.flTurnId,
+    public final FalconSwerveModule frontLeft = new FalconSwerveModule(Constants.flDriveId, Constants.flTurnId,
             Constants.flAbsEncoder, 0);
-    private final FalconSwerveModule frontRight = new FalconSwerveModule(Constants.frDriveId, Constants.frTurnId,
+    public final FalconSwerveModule frontRight = new FalconSwerveModule(Constants.frDriveId, Constants.frTurnId,
             Constants.frAbsEncoder, 0);
-    private final FalconSwerveModule backLeft = new FalconSwerveModule(Constants.blDriveId, Constants.blTurnId,
+    public final FalconSwerveModule backLeft = new FalconSwerveModule(Constants.blDriveId, Constants.blTurnId,
             Constants.blAbsEncoder, 0);
-    private final FalconSwerveModule backRight = new FalconSwerveModule(Constants.brDriveId, Constants.brTurnId,
+    public final FalconSwerveModule backRight = new FalconSwerveModule(Constants.brDriveId, Constants.brTurnId,
             Constants.brAbsEncoder, 0);
 
     private final AnalogGyro gyro = new AnalogGyro(0);
@@ -66,6 +66,13 @@ public class Drivetrain {
         frontRight.setModuleAngle(Rotation2d.fromDegrees(0));
         backLeft.setModuleAngle(Rotation2d.fromDegrees(0));
         backRight.setModuleAngle(Rotation2d.fromDegrees(0));
+    }
+
+    public void setAngle45public() {
+        frontLeft.setModuleAngle(Rotation2d.fromDegrees(45));
+        frontRight.setModuleAngle(Rotation2d.fromDegrees(45));
+        backLeft.setModuleAngle(Rotation2d.fromDegrees(45));
+        backRight.setModuleAngle(Rotation2d.fromDegrees(45));
     }
 
     /** Updates the field relative position of the robot. */

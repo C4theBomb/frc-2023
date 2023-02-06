@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.team931.Constants;
 
@@ -18,7 +19,7 @@ public class FalconSwerveModule {
     private final DutyCycleEncoder absEncoder;
     private Rotation2d encoderZero;
 
-    private Rotation2d offset;
+    private Rotation2d offset = Rotation2d.fromDegrees(0);
 
     /**
      * Initializes the swerve module with default settings and binds motors.
@@ -125,8 +126,8 @@ public class FalconSwerveModule {
      */
     public Rotation2d getModuleAngle() {
         return Rotation2d.fromRadians(
-                turnMotor.getSelectedSensorPosition() * Constants.DriveTrain.turnEncoderTranslationCoefficient
-                        - offset.getRadians());
+                (turnMotor.getSelectedSensorPosition()
+                        - offset.getRadians()) * Constants.DriveTrain.turnEncoderTranslationCoefficient);
     }
 
     /**
@@ -171,8 +172,9 @@ public class FalconSwerveModule {
         // Optimize the reference state to avoid spinning further than 90 degrees
         SwerveModuleState state = SwerveModuleState.optimize(desiredState, getModuleAngle());
 
-        setVelocity(state.speedMetersPerSecond);
-        setModuleAngle(state.angle);
+        setVelocity(5);
+        // SmartDashboard.put()
+        // setModuleAngle(state.angle);
     }
 
     /**

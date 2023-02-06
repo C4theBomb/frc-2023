@@ -9,6 +9,7 @@ import com.team931.subsystems.Drivetrain;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class Robot extends TimedRobot {
@@ -35,7 +36,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-        driveWithJoystick(true);
+        driveTrain.updateOdometry();
+
+        SmartDashboard.putNumber("Module Angle", driveTrain.backRight.getModuleAngle().getDegrees());
     }
 
     @Override
@@ -54,7 +57,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledPeriodic() {
-
     }
 
     private void driveWithJoystick(boolean fieldRelative) {
